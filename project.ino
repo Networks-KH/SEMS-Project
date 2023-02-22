@@ -11,8 +11,12 @@ EnergyMonitor emon;
 #define vCalibration 83.3   //
 #define currCalibration 0.50  //
 BlynkTimer timer;
+double pwr;
+double Tpwr;
+double sval;
+double ival;
 char auth[] = "tXVq_VqvrHFbHZEHm5OtX6Q3nLj8c0FR"; //Your auth token from email
-char ssid[] = "omarIP";    //Type your WiFi name
+char ssid[] = "Khalid";    //Type your WiFi name
 char pass[] = "12345678";    //Type your WiFi password
 float kWh = 0;
 float cost = 0;
@@ -20,7 +24,7 @@ unsigned long lastmillis = millis();//
 void myTimerEvent()
 {
   emon.calcVI(20, 2000);
-  kWh = kWh + emon.apparentPower * (millis() - lastmillis) / 3600000000.0;  // 
+  kWh = kWh + PowerSensor() * (millis() - lastmillis)/ 3600000 ;  // 
   cost = kWh*0.18;
   yield();
   lcd.clear();
@@ -28,33 +32,41 @@ void myTimerEvent()
   lcd.print("Vrms:");
   Serial.print("Vrms: ");
   Serial.println(emon.Vrms, 2);
+  Serial.print("Time: ");
+  Serial.println(millis());
+  Serial.print("Irms: ");
+  Serial.println(IrmsSensor(), 4);
+  Serial.print("Power: ");
+  Serial.println(PowerSensor());
+  Serial.print("Cost: ");
+  Serial.println(cost);
   lcd.print(emon.Vrms, 2);
   lcd.print("V");
   lcd.setCursor(0, 1);
   lcd.print("Irms:");
-  lcd.print(emon.Irms, 4);
+  lcd.print(IrmsSensor(), 4);
   lcd.print("A");
-  delay(2500);
+  delay(1000);
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Power:");
-  lcd.print(emon.apparentPower, 4);
+  lcd.print(PowerSensor(), 4);
   lcd.print("W");
   lcd.setCursor(0, 1);
   lcd.print("kWh:");
   lcd.print(kWh, 4);
   lcd.print("W");
-   delay(2500);
+   delay(1000);
    lcd.clear();
    lcd.setCursor(0, 0);
   lcd.print("cost:");
   lcd.print(cost, 4);
   lcd.print("R");
-  delay(2500);
+  delay(1000);
   lastmillis = millis();
   Blynk.virtualWrite(V0, emon.Vrms);
-  Blynk.virtualWrite(V1, emon.Irms);
-  Blynk.virtualWrite(V2, emon.apparentPower);
+  Blynk.virtualWrite(V1, IrmsSensor());
+  Blynk.virtualWrite(V2, PowerSensor());
   Blynk.virtualWrite(V3, kWh);
   Blynk.virtualWrite(V4, cost);
 }
@@ -62,7 +74,7 @@ void setup()
 {
 //  lcd.begin(16, 2);
   //lcd.init(); 
-  Serial.begin(112500);
+  Serial.begin(115200);
   lcd.begin();                     
   lcd.backlight();
    Blynk.begin(auth, ssid, pass,"Blynk.cloud",80);
@@ -74,11 +86,36 @@ void setup()
   
   lcd.setCursor(5, 1);
   lcd.print("Monitor");
-  delay(3000);
+  delay(1000);
   lcd.clear();
 }
 void loop()
 {
   Blynk.run();
   timer.run();
+  
+}
+
+double PowerSensor(){
+int i;
+pwr = 0;
+Tpwr = 0;
+for (i = 0; i < 10; i++){
+  pwr = emon.apparentPower;
+  Tpwr = Tpwr + pwr;
+  delay (1000);
+  }
+   return (Tpwr/10);
+}
+ // Read sensor level
+  double IrmsSensor(){
+  int i;
+  sval = 0;
+  ival = 0;
+  for (i = 0; i < 10; i++){
+    ival = emon.Irms;
+    sval = sval + ival;
+    delay (1000);
+  }
+  return (sval/10);
 }
