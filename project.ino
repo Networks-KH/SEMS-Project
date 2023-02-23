@@ -24,7 +24,7 @@ unsigned long lastmillis = millis();//
 void myTimerEvent()
 {
   emon.calcVI(20, 2000); // divided time by 3600000 to convert millisecond to hour
-  kWh = kWh + (PowerSensor() * (millis() - lastmillis)/ 3600000)/1000 ;  // divided by 1000 to convert watt to killo watt
+  kWh = kWh + (PowerSensor() * (millis() - lastmillis)/ 3600000.0)/1000 ;  // divided by 1000 to convert watt to killo watt
   cost = kWh*0.18;
   yield();
   lcd.clear();
