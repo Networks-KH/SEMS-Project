@@ -11,10 +11,10 @@ EnergyMonitor emon;
 #define vCalibration 83.3   //
 #define currCalibration 0.50  //
 BlynkTimer timer;
-double pwr;
-double Tpwr;
-double sval;
-double ival;
+float pwr;
+float Tpwr;
+float sval;
+float ival;
 char auth[] = "tXVq_VqvrHFbHZEHm5OtX6Q3nLj8c0FR"; //Your auth token from email
 char ssid[] = "Khalid";    //Type your WiFi name
 char pass[] = "12345678";    //Type your WiFi password
@@ -90,13 +90,7 @@ void setup()
   lcd.clear();
 }
 void loop()
-{
-  Blynk.run();
-  timer.run();
-  
-}
-
-double PowerSensor(){
+float PowerSensor(){
 int i;
 pwr = 0;
 Tpwr = 0;
@@ -108,7 +102,7 @@ for (i = 0; i < 10; i++){
    return (Tpwr/10);
 }
  // Read sensor level
-  double IrmsSensor(){
+  float IrmsSensor(){
   int i;
   sval = 0;
   ival = 0;
@@ -118,4 +112,9 @@ for (i = 0; i < 10; i++){
     delay (1000);
   }
   return (sval/10);
+}
+{
+  Blynk.run();
+  timer.run();
+  
 }
