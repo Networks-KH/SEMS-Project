@@ -51,4 +51,4 @@ code .
 
 ▪ Connect to server.
 
-▪ Connect to application .
+▪ Connect to Blynk Cloud .
